@@ -10,10 +10,6 @@ const taskSchema = new Schema({
     type: String,
     required: true,
   },
-  editing: {
-    type: Boolean,
-    required: true,
-  },
 });
 
 const Task = mongoose.model("task", taskSchema);
