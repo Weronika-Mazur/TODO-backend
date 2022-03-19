@@ -1,71 +1,93 @@
-const Task = require("../models/task");
+const { Task } = require("../models/task");
+const User = require("../models/user");
 
-const get_tasks = (req, res) => {
-  Task.find()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+const get_tasks = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id });
+    if (user) {
+      return res.status(200).send(user.todo);
+    }
+    res.status(403).send({ error: "Invalid Credentials" });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-const add_task = (req, res) => {
-  const task = new Task(req.body);
+const add_task = async (req, res) => {
+  try {
+    const task = new Task(req.body);
+    const user = await User.findOne({ _id: req.user._id });
 
-  task
-    .save()
-    .then((result) => {
-      res.redirect("/todos");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    if (user) {
+      user.todo = [...user.todo, task];
+      await user.save();
+    }
+
+    res.status(403).send({ error: "Invalid Credentials" });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-const clear_tasks = (req, res) => {
-  Task.deleteMany({ state: "completed" })
-    .then((result) => {
-      res.json({ redirect: "/todos" });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+const clear_tasks = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id });
+    if (user) {
+      user.todo = user.todo.filter((task) => task.state === "active");
+      await user.save();
+      return res.status(200).send(user.todo);
+    }
+    res.status(403).send({ error: "Invalid Credentials" });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-const get_task = (req, res) => {
-  const id = req.params.id;
-  Task.findById(id)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+const get_task = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findOne({ _id: req.user._id });
+    if (user) {
+      const task = user.todo.id(id);
+      return res.status(200).send(task);
+    }
+    res.status(403).send({ error: "Invalid Credentials" });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-const delete_task = (req, res) => {
-  const id = req.params.id;
+const delete_task = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  Task.findByIdAndDelete(id)
-    .then((result) => {
-      res.json({ redirect: "/todos" });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    const user = await User.findOne({ _id: req.user._id });
+    if (user) {
+      user.todo.id(id).remove();
+      await user.save();
+      return res.status(200).send(user.todo);
+    }
+    res.status(403).send({ error: "Invalid Credentials" });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-const change_task = (req, res) => {
-  const id = req.params.id;
+const change_task = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findOne({ _id: req.user._id });
+    if (user) {
+      const task = user.todo.id(id);
+      task.set(req.body);
 
-  Task.findOneAndUpdate({ _id: id }, { ...req.body })
-    .then((result) => {
-      res.json({ redirect: "/todos" });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      await user.save();
+      return res.status(200).send(task);
+    }
+    res.status(403).send({ error: "Invalid Credentials" });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 module.exports = {
