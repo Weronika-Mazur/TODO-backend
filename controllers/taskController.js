@@ -21,6 +21,7 @@ const add_task = async (req, res) => {
     if (user) {
       user.todo = [...user.todo, task];
       await user.save();
+      return res.status(200).send(user.todo);
     }
 
     res.status(403).send({ error: "Invalid Credentials" });

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Schema = mongoose.Schema;
-const Task = require("../models/task");
+const { taskSchema } = require("../models/task");
 
 const saltRounds = 10;
 
@@ -20,7 +20,7 @@ const userSchema = new Schema({
     type: String,
   },
 
-  todo: [Task.taskSchema],
+  todo: [taskSchema],
 });
 
 // hash password before saving
