@@ -1,6 +1,7 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 
-const auth = (req, res, next) => {
+const auth = (req: Request, res: Response, next: NextFunction) => {
   const authorization =
     req.headers["x-access-token"] ||
     req.headers.authorization ||
@@ -25,4 +26,4 @@ const auth = (req, res, next) => {
   return next();
 };
 
-module.exports = auth;
+export { auth };

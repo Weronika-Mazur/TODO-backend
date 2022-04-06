@@ -1,15 +1,15 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
-const mongoose = require("mongoose");
-const todosRoutes = require("./routes/todosRoutes");
-const loginRoutes = require("./routes/loginRoutes");
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import morgan from "morgan";
+import mongoose from "mongoose";
+import { todosRoutes } from "./routes/todosRoutes";
+import { loginRoutes } from "./routes/loginRoutes";
 
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
-const dbURL = process.env.DB_URL;
+const dbURL: string = process.env.DB_URL;
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 mongoose
   .connect(dbURL)
-  .then((result) => {
+  .then(() => {
     console.log("connected to DB");
     app.listen(PORT);
   })
