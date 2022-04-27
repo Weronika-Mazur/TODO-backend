@@ -1,12 +1,14 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Schema = mongoose.Schema;
-const { taskSchema } = require("../models/task");
+import { Schema, model } from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+import { taskSchema } from "../models/task";
+
+import { UserDocument, UserModel } from "../type/user";
 
 const saltRounds = 10;
 
-const userSchema = new Schema({
+const userSchema = new Schema<UserDocument, UserModel>({
   email: {
     type: String,
     required: true,
@@ -33,13 +35,21 @@ userSchema.pre("save", async function () {
 });
 
 // find user by email and password
-userSchema.statics.compareCredentials = async function (email, password) {
+userSchema.statics.compareCredentials = async function (
+  email: string,
+  password: string
+): Promise<boolean> {
   const user = await User.findOne({ email });
+
+  if (!user) {
+    return false;
+  }
+
   const result = await bcrypt.compare(password, user.password);
   return result;
 };
 
-userSchema.methods.generateToken = async function () {
+userSchema.methods.generateToken = async function (): Promise<string> {
   const user = this;
   const token = jwt.sign(
     { _id: user._id, email: user.email },
@@ -51,6 +61,6 @@ userSchema.methods.generateToken = async function () {
   return token;
 };
 
-const User = mongoose.model("user", userSchema);
+const User = model<UserDocument, UserModel>("user", userSchema);
 
-module.exports = User;
+export { User };
