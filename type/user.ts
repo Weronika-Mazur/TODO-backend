@@ -1,9 +1,5 @@
 import { Model, Types } from "mongoose";
-
-export interface TaskDocument {
-  content: string;
-  state: string;
-}
+import { TaskDocument } from "./task";
 
 export interface UserDocument {
   email: string;

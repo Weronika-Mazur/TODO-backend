@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 import { taskSchema } from "../models/task";
 
-import { UserDocument, UserModel } from "../type/types";
+import { UserDocument, UserModel } from "../type/user";
 
 const saltRounds = 10;
 

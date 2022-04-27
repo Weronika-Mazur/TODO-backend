@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { TaskDocument } from "../type/types";
+import { TaskDocument } from "../type/task";
 
 const taskSchema = new Schema<TaskDocument>({
   content: {

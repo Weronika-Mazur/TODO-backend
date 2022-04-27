@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { Task } from "../models/task";
 import { User } from "../models/user";
 
-import { TaskDocument } from "../type/types";
+import { TaskDocument } from "../type/task";
 
 const getTasks = async (req: Request, res: Response) => {
   try {
@@ -40,9 +40,11 @@ const clearTasks = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(403).send({ error: "Invalid Credentials" });
     }
-    // await User.updateOne({_id: req.user._id }, {$pull: {todo: {state: "completed"}}});
-    user.todo.pull(...user.todo.filter((task) => task.state === "completed"));
-    await user.save();
+    await User.updateOne(
+      { _id: req.user._id },
+      { $pull: { todo: { state: "completed" } } }
+    );
+
     res.status(200).send(user.todo);
   } catch (err) {
     console.log(err);
